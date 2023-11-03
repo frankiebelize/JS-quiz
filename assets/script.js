@@ -83,7 +83,7 @@ score = 0;
 secondsLeft = 45;
 nextbtn.innerHTML = "Next";
 showQuestion();
-// setTime();
+showTime();
 }
 
 function showQuestion() {
@@ -116,25 +116,26 @@ function reset() {
     }
 }
 
-function selectAnswer(a) {
-const SelectedBtn = a.target;
-const isCorrect = SelectedBtn.dataset.correct === "true";
-if(isCorrect){
-    SelectedBtn.classList.add("correct");
-    score++
-} else {
-    SelectedBtn.classList.add("incorrect");
-    secondsLeft= secondsLeft - 5;
-}
-Array.from(ansbtn.children).forEach(button => {
-    if(button.dataset.correct === "true"){
-        // button.classList.add("correct");
-    }
-    button.disabled = true;
-});
 
-nextbtn.style.visibility ="visible";
-};
+function selectAnswer(a) {
+    const selectedBtn = a.target;
+    const isCorrect = selectedBtn.dataset.correct === "true";
+
+    if (isCorrect) {
+        selectedBtn.classList.add("correct");
+        score++;
+    } else {
+        selectedBtn.classList.add("incorrect");
+        secondsLeft = Math.max(0, secondsLeft - 5); // Deduct 5 seconds, but ensure it doesn't go negative
+    }
+
+    Array.from(ansbtn.children).forEach(button => {
+        button.disabled = true;
+    });
+
+    nextbtn.style.visibility = "visible";
+}
+
 
 nextbtn.addEventListener("click", ()=> {
     if(currentQuestionIndex < questions.length){
@@ -161,8 +162,31 @@ function showScore(){
    let newTotalscore = totalscore.toFixed(2);
     console.log(newTotalscore);
     questionEl.innerHTML = 'You scored' + newTotalscore;
+    const playerName = prompt("Enter your name:");
+
+    // Store the score with the name in local storage
+    if (playerName) {
+        const playerScore = {
+            name: playerName,
+            score: newTotalscore,
+        };
+
+        // Retrieve existing scores from local storage
+        const existingScores = JSON.parse(localStorage.getItem("quizScores")) || [];
+
+        // Add the current score to the list
+        existingScores.push(playerScore);
+
+        // Save the updated scores back to local storage
+        localStorage.setItem("quizScores", JSON.stringify(existingScores));
+    }
+
     nextbtn.innerHTML = "play Again";
     nextbtn.style.visibility = "visible";
+    currentQuestionIndex = 0;
+    score = 0;
+    secondsLeft = 45;
+    nextbtn.addEventListener("click", startQuiz); // Add event listener to start the quiz again
 }
 
 function setTime (){
@@ -172,7 +196,7 @@ var timerInterval = setInterval(function() {
     secondsLeft--;
     timeEl.textContent = secondsLeft;
 
-    if(secondsLeft === 0) {
+    if(secondsLeft <= 0) {
       // Stops execution of action at set interval
       clearInterval(timerInterval);
       // Calls function to create and append image
@@ -185,14 +209,10 @@ var timerInterval = setInterval(function() {
 
 function hideTime() {
     var x = document.getElementById("time-sec");
-    if (x.style.display === "none") {
-      x.style.display = "block";
-    } else {
       x.style.display = "none";
-    }
-  }
-
+    };
+    function showTime() {
+        var x = document.getElementById("time-sec");
+        x.style.display = "block";
+    };
 setTime();
-// startQuiz();
-
-// local storage functions
