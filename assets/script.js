@@ -73,7 +73,8 @@ let currentQuestionIndex = 0;
 let score = 0;
 //timer var
 const timeEl = document.querySelector("#timer");
-let secondsLeft = 0;
+const timeSecEl = document.getElementsByClassName('.time-sec');
+let secondsLeft = 45;
 //local storage var
 
 function startQuiz(){
@@ -149,25 +150,27 @@ nextbtn.addEventListener("click", ()=> {
         showQuestion();
     }else{
         showScore();
+        clearInterval(secondsLeft);
     }
  };
 
 function showScore(){
     reset();
+    hideTime();
     const totalscore = ((score/questions.length)*100);
    let newTotalscore = totalscore.toFixed(2);
     console.log(newTotalscore);
     questionEl.innerHTML = 'You scored' + newTotalscore;
     nextbtn.innerHTML = "play Again";
     nextbtn.style.visibility = "visible";
-    secondsLeft=45;
 }
 
 function setTime (){
     startQuiz();
+    secondsLeft=45;
 var timerInterval = setInterval(function() {
     secondsLeft--;
-    timeEl.innerHTML = secondsLeft;
+    timeEl.textContent = secondsLeft;
 
     if(secondsLeft === 0) {
       // Stops execution of action at set interval
@@ -179,6 +182,16 @@ var timerInterval = setInterval(function() {
      1000);
   
 }
+
+function hideTime() {
+    var x = document.getElementById("time-sec");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+
 setTime();
 // startQuiz();
 
